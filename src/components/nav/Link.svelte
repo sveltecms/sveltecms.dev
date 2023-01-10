@@ -11,10 +11,11 @@
 </li>
 
 <style>
-    .navLink{
+    .navLink a{
         font-size: 15px;
         font-weight: 300;
         margin-left: 20px;
+        color: var(--navColor);
     }
     .navLink a{ position: relative; }
     .navLink.active a::after , .navLink a:hover::after{

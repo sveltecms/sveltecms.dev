@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@100;200;300;400;500;600;700;800;900&display=swap');
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Exo 2', sans-serif;
+}
+:root{
+    /* globals */
+    --headerColor:#fafafa;
+    --textColor:#e4e4e4;
+    --boxShadow:0 2px 4px rgba(0,0,0,.2);
+    --boxShadow2:0 1px 4px rgba(0,0,0,.2);
+    --iconColor: #757575;
+    --mainColor:#066a9b;
+    --bodyBg:#23272F;
+    --antiBodyBg:#2e323a;
+    /* nav */
+    --navBg:#23272F;
+    --navLinkColor:#fff;
+    --navLinkHoverBg:#ffffff0d;
+    /* footer */
+    --footerBg:#2e323a;
+    --footerColor:#e0e0e0;
+    /* button */
+    --buttonBg: #066a9b;
+    --buttonBg2: #264154;
+    --buttonColor:#fff;
+}
+/* Remove scroll bar */
+body::-webkit-scrollbar {
+    display: none;
+}
+a{ text-decoration: none; color: var(--buttonBg);}
+html,body,.app{
+    background-color: var(--bodyBg);
+}
+/* label data */
+[data-label]{
+    position: relative;
+}
+[data-label]:hover::before{
+    content: attr(data-label);
+    width: max-content;
+    position: absolute;
+    top: calc(100% + 10px);
+    z-index: 10;
+    background-color: var(--antiBodyBg);
+    box-shadow: var(--boxShadow2);
+    color: white;
+    font-size: 15px;
+    font-weight: 300;
+    border-radius: 2px;
+    padding: 7px 12px;
+}
+[data-label-right]:hover::before{
+    top: 50%; transform: translateY(-50%);
+    left: calc(100% + 5px);
+    background-color: var(--antiBodyBg);
+    box-shadow: var(--boxShadow2);
+}
+[data-label-left]:hover::before{
+    top: 50%; transform: translateY(-50%);
+    right: calc(100% + 5px);
+    background-color: var(--antiBodyBg);
+    box-shadow: var(--boxShadow2);
+}
+[data-label-top]:hover::before{
+    top: -60px;
+    left: 50%; transform: translateX(-100%);
+}
