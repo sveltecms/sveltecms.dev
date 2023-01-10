@@ -4,7 +4,7 @@
         <h3>All in one svelte kit content management system</h3>
         <p>Add a cms to your svelte projects without having to leave your work folder.</p>
         <div class="buttons">
-            <a href="/#install" class="button">Add to project</a>
+            <a href="/docs" class="button">Get started</a>
         </div>
     </div>
     <div class="image">

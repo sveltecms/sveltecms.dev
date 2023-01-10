@@ -4,6 +4,6 @@
 
 <style>
     .logo,.logo img{
-        height: 40px;
+        height: 55px;
     }
 </style>

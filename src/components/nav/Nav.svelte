@@ -23,6 +23,7 @@
         padding: 15px 0;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        z-index: 100;
     }
     .mainNav{
         max-width: 1200px;

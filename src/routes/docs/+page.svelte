@@ -1,22 +1,17 @@
-<script>
+<script lang="ts">
+    export let data:PageServerData
+    import type { PageServerData } from "./$types";
     import SvelteHead from "@anthony809/svelte-head";
-    import PageTitle from "$comps/PageTitle.svelte";
-    import Terminal from "$comps/Terminal.svelte";
+    import EditorViewer from "@anthony809/svelte-editor/EditorViewer.svelte"
+    const page = data.page
     const pageData = {
         appName:"svelteCMS",
         favicon:"/favicon.png",
-        title:"Documentation",
-        description:"svelteCMS's documentation page.",
+        title:"Docs",
+        description:"svelteCMS documentation, learn how to install,update and more about the svelte cms.",
         backdrop:"/backdrop.png"
     }
 </script>
 
 <SvelteHead {...pageData}/>
-<PageTitle title="Add to your project"/>
-<Terminal>
-    npx add-sveltecms
-    # Optional: Database url
-    npx add-sveltecms --dbUrl=mongodb://localhost:27017
-    # Optional: App name( project name )
-    npx add-sveltecms --appName=yourAppName
-</Terminal>
+<EditorViewer data={page.content}/>

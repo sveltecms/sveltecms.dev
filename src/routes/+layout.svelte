@@ -1,19 +1,13 @@
 <script lang="ts">
-    import"../app.css"
-    import Nav from "$comps/nav/Nav.svelte";
+    import Layout from "./Layout.svelte";
+    import { page } from "$app/stores";
+    $: isAdminRoute = $page.url.pathname.includes("/admin")
 </script>
 
-<div class="layout">
-    <Nav />
-    <main>
+{#if isAdminRoute}
+    <slot />
+{:else}
+    <Layout>
         <slot />
-    </main>
-</div>
-
-<style>
-    main{
-        max-width: 1200px;
-        width: 95%;
-        margin: 20px auto 0 auto;
-    }
-</style>
+    </Layout>
+{/if}

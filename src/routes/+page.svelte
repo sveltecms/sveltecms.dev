@@ -17,11 +17,3 @@
 <SvelteHead {...pageData}/>
 <HomeHero />
 <Cards data={cardsData}/>
-<PageTitle title="Add to your project"/>
-<Terminal>
-    npx sveltejscms@latest
-    # Optional: MongoDB database url
-    npx sveltejscms@latest --dbUrl=mongodb://localhost:27017
-    # Optional: App name( project name )
-    npx sveltejscms@latest --appName=yourAppName
-</Terminal>
