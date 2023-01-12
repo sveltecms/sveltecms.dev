@@ -4,7 +4,7 @@ import type { ObjectId } from "mongodb"
 export type ObjectData = { [key:string]:any }
 
 /** Elements types allow in route data */
-export type ElementType = "dateTime" | "textArea" | "input" | "inputNumber" | "slug" | "content" | "image" | "_categories" | "_tags" | "_status" | "_createdAt" | "_updatedAt"
+export type ElementType = "dateTime" | "textArea" | "input" | "inputNumber" | "slug" | "content" | "image" | "images" | "_categories" | "_tags" | "_status" | "_createdAt" | "_updatedAt"
 
 /** Route element object data */
 export type ElementData = {
@@ -12,7 +12,7 @@ export type ElementData = {
     ID:string
     /** Name of element */
     name:string
-    /** Type of element "dateTime" | "textArea" | "input" | "inputNumber" | "slug" | "content" | "image" | "_categories" | "_tags" | "_status" | "_createdAt" | "_updatedAt" */
+    /** Type of element "dateTime" | "textArea" | "input" | "inputNumber" | "slug" | "content" | "image" | "images" | "_categories" | "_tags" | "_status" | "_createdAt" | "_updatedAt" */
     type:ElementType
     /** Element value (data) */
     value:any

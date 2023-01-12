@@ -15,7 +15,7 @@
     const dispatcher = createEventDispatcher()
     const typeText = element.type==="input" ? "🔏" : element.type==="textArea" ? "💬"
     : element.type==="content" ? "📝" : element.type==="slug" ? "🔗" : element.type==="dateTime" ? "🗓️"
-    : element.type==="image" ? "🏞️" : element.type==="inputNumber" ? "💯" : "💬"
+    : element.type==="image" ? "🏞️" : element.type==="inputNumber" ? "💯" : element.type==="images" ? "🏞️" : "💬"
 </script>
 
 <div class="element">

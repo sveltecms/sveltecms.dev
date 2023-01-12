@@ -135,7 +135,7 @@ async function newObjectLinking(collection:string,elements:ElementData[]){
         await linkedTagsCollection.insertOne(newLinkedTag)
     }
     // Linked assets fields 
-    const elementsWithAsset = elements.filter(data=>data.type==="image")
+    const elementsWithAsset = elements.filter(data=>["image","images"].includes(data.type))
     for(const element of elementsWithAsset){
         const newLinkedAsset:LinkedAssetLoad = { collection, target: element.ID }
         // Check if linked exists

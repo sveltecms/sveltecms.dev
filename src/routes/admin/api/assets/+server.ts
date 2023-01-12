@@ -118,7 +118,9 @@ async function handleAssetUpdated(newAssetData:AssetData){
         const linkedCollection = db.collection(linkedAsset.collection)
         const filter = { [`${linkedAsset.target}._id`]:newAssetData._id }
         // Update asset where asset is being used
-        linkedCollection.updateMany(filter,{$set:{[`${linkedAsset.target}`]:newAssetData}})
+        const isListType = linkedAsset.target==="images"
+        if(isListType) linkedCollection.updateMany(filter,{$set:{[`${linkedAsset.target}.$`]:newAssetData}})
+        else linkedCollection.updateMany(filter,{$set:{[`${linkedAsset.target}`]:newAssetData}})
     }
 }
 
@@ -131,6 +133,9 @@ async function handleAssetDeleted(assetData:AssetData){
         const linkedCollection = db.collection(linkedAsset.collection)
         const filter = { [`${linkedAsset.target}._id`]:assetData._id }
         // Replace with default asset
-        linkedCollection.updateMany(filter,{ $set:{[`${linkedAsset.target}`]:svelteCMS.defaults.asset} })
+        const isListType = linkedAsset.target==="images"
+        // @ts-ignore
+        if(isListType) linkedCollection.updateMany(filter,{ $pull: { [`${linkedAsset.target}`]:{ _id:assetData._id } } })
+        else linkedCollection.updateMany(filter,{ $set:{[`${linkedAsset.target}`]:svelteCMS.defaults.asset} })
     }
 }

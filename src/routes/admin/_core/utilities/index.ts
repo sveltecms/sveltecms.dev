@@ -50,6 +50,9 @@ export function validateObjectElements(elements:ElementData[]){
         else if(element.type==="inputNumber" && element.value==="" || element.value===null){
             errors.push({ ID:element.ID,msg:`Element:${element.ID} is required` })
         }
+        else if(element.type==="images" && element.value==="" || (typeof element.value==="object" && element.value.length === 0)){
+            errors.push({ ID:element.ID,msg:`Element:${element.ID} is required` })
+        }
     }
     return errors
 }
@@ -131,6 +134,7 @@ export function getElementType(type:ElementType){
         slug:`string`,
         content:`any`,
         image:`{\n        _id:string\n        name:string\n        path:string\n        type:string\n        extension:string\n    }`,
+        images:`{\n        _id:string\n        name:string\n        path:string\n        type:string\n        extension:string\n    }[]`,
         _status:`"public"|"private"`,
         _categories:`{\n        _id:string\n        name:string\n        path:string\n        type:string\n        extension:string\n    }`,
         _tags:`{\n        _id:string\n        name:string\n        path:string\n        type:string\n        extension:string\n    }`,
