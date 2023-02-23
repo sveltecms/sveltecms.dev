@@ -44,7 +44,7 @@
     let showElementEditor:boolean = false
     /** Indicate to show error */
     let checkError:boolean = false 
-    const elementTypes:ElementType[] = [ "dateTime", "textArea", "input", "inputNumber", "slug", "content", "image" ]
+    const elementTypes:ElementType[] = [ "dateTime", "textArea", "input", "inputNumber", "slug", "content", "image","images" ]
 </script>
 
 <div class="elementEditor" class:error>

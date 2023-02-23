@@ -7,12 +7,13 @@
         "build": "vite build",
         "preview": "vite preview",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "start":"PORT=3000 node -r dotenv/config build",
+        "export": "node ./.svelteCMS/export.js",
+        "import": "node ./.svelteCMS/import.js"
     },
     "devDependencies": {
-        "@anthony809/svelte-head": "^0.0.5",
-        "@sveltejs/adapter-auto": "next",
-        "@sveltejs/adapter-static": "^1.0.0",
+        "@sveltejs/adapter-node": "^1.2.0",
         "@sveltejs/kit": "next",
         "sass": "^1.57.0",
         "svelte": "^3.54.0",
@@ -23,11 +24,13 @@
     },
     "type": "module",
     "dependencies": {
+        "@anthony809/svelte-draggable": "^0.0.8",
         "@anthony809/svelte-editor": "^0.0.4",
-        "@anthony809/svelte-toasts": "^0.0.1",
+        "@anthony809/svelte-head": "^0.0.6",
+        "@anthony809/svelte-toasts": "^0.0.2",
         "bcrypt": "^5.1.0",
+        "dotenv": "^16.0.3",
         "mongodb": "^4.13.0",
-        "slugify": "^1.6.5",
-        "@anthony809/svelte-head": "^0.0.5"
+        "slugify": "^1.6.5"
     }
 }

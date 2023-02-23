@@ -1,6 +1,6 @@
 import cms from "$Cms"
 import svelteCMS from "$svelteCMS"
-import { ROUTES } from "$Stores"
+import { ROUTES,SEARCH } from "$Stores"
 import { capitalize,getElementType } from "$Utilities"
 import { dev as isDevMode } from "$app/environment"
 import { writeFileSync } from "fs"

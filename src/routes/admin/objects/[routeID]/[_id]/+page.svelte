@@ -30,6 +30,8 @@
     // PACKAGES
     import { newToast } from "@anthony809/svelte-toasts/index"
     import Editor from "@anthony809/svelte-editor/Editor.svelte"
+    import Draggable from "@anthony809/svelte-draggable/Draggable.svelte"
+    import DraggableChild from "@anthony809/svelte-draggable/DraggableChild.svelte"
     import FileUploader from "$Packages/fileUploader/FileUploader.svelte";
     // ELEMENTS
     import Button from "$Elements/Button.svelte";
@@ -48,6 +50,7 @@
     import LeftContent from "$Comps/routes/LeftContent.svelte";
     import RightContent from "$Comps/routes/RightContent.svelte";
     import ImagePreview from "$Comps/routes/ImagePreview.svelte";
+    import Image from "$Comps/routes/Image.svelte";
 
     /** ADD VALUE TO ELEMENTS <ADDED> */
     function addElementsValue(){
@@ -83,10 +86,39 @@
         const asset:AssetData = e.detail
         routeData.elements.forEach(element=>{
             if(element.ID===lastElementAssetTargeted.ID){
-                element.value = asset
+                // Check if type is a list type like images
+                const isListType = lastElementAssetTargeted.type==="images"
+                if(isListType){
+                    if(!element.value) element.value = []
+                    const assetExists = element.value.find((data:any)=>data._id===asset._id)
+                    // Add if asset do not exists
+                    if(!assetExists) element.value = [...element.value,asset]
+                }
+                // Else just add the asset to value
+                else element.value = asset    
                 routeData = { ...routeData }
             }
         })
+    }
+
+    /** Move images from Draggable */
+    function handleDraggable(e:any,element:ElementData){
+        const detailData:{ fromID:string,toID:string } = e.detail
+        // Swap array item
+        const fromIDArrayIndex = element.value.findIndex((data:any)=>data._id===detailData.fromID)
+        const toIDArrayIndex = element.value.findIndex((data:any)=>data._id===detailData.toID)
+        const fromIDArrayData = element.value[fromIDArrayIndex]
+        const toIDArrayData = element.value[toIDArrayIndex]
+        element.value[fromIDArrayIndex] = toIDArrayData
+        element.value[toIDArrayIndex] = fromIDArrayData        
+        routeData = { ...routeData }
+    }
+    /** Remove image from Draggable */
+    function handleDraggableRemove(e:any,element:ElementData){
+        const draggableID:string = e.detail // asset/image _id
+        const newImagesList = element.value.filter((data:any)=>data._id!==draggableID)
+        element.value = [...newImagesList]      
+        routeData = { ...routeData }
     }
 
     /** PUBLISH / UPDATE OBJECT */
@@ -153,6 +185,19 @@
             {:else if element.type === "content"}
                 <Label text={element.name} error={checkForErrors && !element.value}/>
                 <Editor bind:data={element.value}/>
+            {:else if element.type === "images"}
+                <Label text={element.name} error={checkForErrors && !element.value} btnText="Add image" on:click={()=>{
+                        showFileUploader=true
+                        lastElementAssetTargeted = element }}/>
+                {#if element.value}
+                    <Draggable>
+                        {#each element.value as image}
+                            <DraggableChild id={image._id} on:dropEnded={(e)=>handleDraggable(e,element)} on:remove={(e)=>handleDraggableRemove(e,element)}>
+                                <Image {image}/>
+                            </DraggableChild>
+                        {/each}
+                    </Draggable>
+                {/if}
             {/if}
         {/each}
     </LeftContent>

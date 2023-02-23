@@ -26,4 +26,9 @@
         border-radius: 10px;
         opacity: 50%;
     }
+    @media(max-width:700px){
+        .title{
+            font-size: 25px;
+        }
+    }
 </style>

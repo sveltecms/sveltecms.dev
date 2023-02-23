@@ -18,7 +18,8 @@
         // Update page number
         pageNumber = pageNumber+1
         // Send api request
-        const apiLoad:FetchRoutesLoad = { filter:{},count:svelteCMS.config.routesPerPage,pageNumber }
+        const filter = data.query ? { title:data.query } : {}
+        const apiLoad:FetchRoutesLoad = { filter,count:svelteCMS.config.routesPerPage,pageNumber }
         const apiResponse:FetchRoutesRes = await fetchPost("PATCH","/admin/api/routes",apiLoad) 
         if(apiResponse.length>0){
             if(apiResponse.length<svelteCMS.config.routesPerPage) resetStages()
@@ -39,6 +40,14 @@
         showLoadMoreBtn = false
         pageNumber = 1
     }
+
+    // When data changes, reset some variables
+    $: if(data.routes){
+        showLoadMoreBtn = data.routes.length >= svelteCMS.config.routesPerPage
+        pageNumber = 1
+        ROUTES.set([...data.routes])
+    }
+
     // Variables
     /** Indicate when loading more Routes */
     let loadingMoreRoutes:boolean = false
@@ -53,11 +62,12 @@
         description:svelteCMS.site.desc,
         backdrop:svelteCMS.site.backdrop
     }
+    $: title = data.query ? `Result for : ${data.query}` : "Routes"
 </script>
 
 <SvelteHead {...pageData}/>
 {#if $ROUTES.length>0}
-    <PageTitleLink href="/admin/routes/create" title="All routes"/>
+    <PageTitleLink href="/admin/routes/create" {title}/>
     <Routes routes={$ROUTES}/>
     {#if showLoadMoreBtn}
         <Button loading={loadingMoreRoutes} text="Load more" centerBtn={true} --width="fit-content" on:click={loadMoreRoutes}/>

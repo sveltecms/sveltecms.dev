@@ -9,9 +9,12 @@ import type { ApiObjectCreateLoad,ApiObjectCreateData, ElementData, LinkedAssetL
 import { ObjectId } from "mongodb"
 
 // GET / SEARCH OBJECTS
-export const PATCH:RequestHandler = async({request})=>{   
+export const PATCH:RequestHandler = async({request,url})=>{   
     const jsonData:FetchRouteObjectsLoad = await request.json()
-    const objects = await cms.Fetch.routeObjects(jsonData)
+    const pageNumber = jsonData.pageNumber
+    const filter = jsonData.filter ? { title:new RegExp(jsonData.filter.title,"ig" )} : {}
+    const count = jsonData.count
+    const objects = await cms.Fetch.routeObjects({filter,count,pageNumber,routeID:jsonData.routeID})
     return json(objects)
 }
 
@@ -135,7 +138,7 @@ async function newObjectLinking(collection:string,elements:ElementData[]){
         await linkedTagsCollection.insertOne(newLinkedTag)
     }
     // Linked assets fields 
-    const elementsWithAsset = elements.filter(data=>data.type==="image")
+    const elementsWithAsset = elements.filter(data=>["image","images"].includes(data.type))
     for(const element of elementsWithAsset){
         const newLinkedAsset:LinkedAssetLoad = { collection, target: element.ID }
         // Check if linked exists

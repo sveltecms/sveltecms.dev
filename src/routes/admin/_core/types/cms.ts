@@ -7,7 +7,7 @@ export type FetchRouteLoad = { _id:ObjectId } | { ID:string } | { title:string }
 export type FetchRouteRes = RouteData|null
 /** Data needed to fetch routes */
 export interface FetchRoutesLoad {
-    filter:{ _id:ObjectId } | { ID:string } | { title:string } | { [key:string]:any } | {}
+    filter:{ [key:string]:any }
     count:number
     pageNumber?:number
     sort?:"newFirst"|"oldFirst"
@@ -22,7 +22,7 @@ export type FetchRouteObjectLoad = { _id:ObjectId } | { [key:string]:any }
 export type FetchRouteObjectRes = ObjectData|null
 /** Data needed to fetch route objects */
 export interface FetchRouteObjectsLoad {
-    filter:{ _id:ObjectId } | { [key:string]:any }
+    filter:{ [key:string]:any }
     /** Route ID example posts */
     routeID:any
     count:number
@@ -54,7 +54,7 @@ export type FetchUserLoad = { _id:ObjectId } | { email:string } | { [key:string]
 export type FetchUserRes = UserData|null
 /** Data needed to fetch users */
 export interface FetchUsersLoad {
-    filter:{ _id:ObjectId } | { email:string } | { [key:string]:any } | {}
+    filter:{ [key:string]:any } | null
     count:number
     pageNumber?:number
     sort?:"newFirst"|"oldFirst"

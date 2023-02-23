@@ -17,3 +17,5 @@
 <SvelteHead {...pageData}/>
 <HomeHero />
 <Cards data={cardsData}/>
+<PageTitle title="Add to a svelteKit project"/>
+<Terminal>npx sveltejscms@latest</Terminal>

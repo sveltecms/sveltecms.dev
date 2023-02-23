@@ -72,7 +72,7 @@
         popUpBoxOpen = false
     }
     // Variables
-    /** Asset to be edit, set before openning popUpBox */
+    /** Asset to be edit, set before opening popUpBox */
     let assetToEdit:AssetData
     /** Indicate if pop up box is open or not */
     let popUpBoxOpen:boolean = false

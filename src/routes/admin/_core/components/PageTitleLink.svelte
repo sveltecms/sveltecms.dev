@@ -46,8 +46,6 @@
         align-items: center;
         justify-content: space-between;
         color: var(--textColor);
-        font-size: 20px;
-        text-shadow: 2px 2px 0px #5b5b5b;
         margin-bottom: 10px;
     }
     .goBack{
@@ -65,7 +63,10 @@
     }
     h2{
         flex: 1;
-        font-weight: 600;
+        font-weight: 500;
+        font-size: 35px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
     }
     .icon{
         display: flex;
@@ -89,5 +90,10 @@
         display: flex;
         align-items: center;
         text-transform: uppercase;
+    }
+    @media(max-width:700px){
+        h2{
+            font-size: 30px;
+        }
     }
 </style>

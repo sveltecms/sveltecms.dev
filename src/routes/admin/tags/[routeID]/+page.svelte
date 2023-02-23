@@ -34,7 +34,8 @@
         // Update page number
         pageNumber = pageNumber+1
         // Send api request
-        const apiLoad:FetchTagsLoad = { filter:{},count:svelteCMS.config.tagsPerPage,pageNumber,routeID }
+        const filter = data.query ? { name:data.query } : {}
+        const apiLoad:FetchTagsLoad = { filter,count:svelteCMS.config.tagsPerPage,pageNumber,routeID }
         const apiResponse:FetchTagsRes = await fetchPost("PATCH",API_PATH,apiLoad) 
         if(apiResponse.length>0){
             if(apiResponse.length<svelteCMS.config.tagsPerPage) resetStages()
@@ -57,7 +58,7 @@
     }
     $: tags = data.tags
     $: routeID = data.routeID
-    $: title = `${capitalize(routeID)}'s tags`
+    $: title = data.query ? `Result for : ${data.query}` : `${capitalize(routeID)}'s tags`
     $: newTagLink = `/admin/tags/${routeID}/create`
     $: showLoadMoreBtn = data.tags.length >= svelteCMS.config.tagsPerPage
     let pageNumber = 1
