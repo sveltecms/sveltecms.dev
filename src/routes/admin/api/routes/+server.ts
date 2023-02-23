@@ -9,7 +9,10 @@ import type { FetchRoutesLoad } from "$Types/cms"
 // GET / SEARCH ROUTES
 export const PATCH:RequestHandler = async({request})=>{   
     const jsonData:FetchRoutesLoad = await request.json();    
-    const routes = await cms.Fetch.routes(jsonData)
+    const pageNumber = jsonData.pageNumber
+    const filter = jsonData.filter ? { title:new RegExp(jsonData.filter.title,"ig" )} : {}
+    const count = jsonData.count
+    const routes = await cms.Fetch.routes({filter,count,pageNumber})
     return json(routes)
 }
 

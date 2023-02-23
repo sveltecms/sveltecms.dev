@@ -55,17 +55,17 @@ export default {
     },
     config:{
         /** Assets per page */
-        assetsPerPage:24,
+        assetsPerPage:2,
         /** Users per page */
-        usersPerPage:16,
+        usersPerPage:2,
         /** Routes per page */
-        routesPerPage:16,
+        routesPerPage:2,
         /** Assets per page */
-        objectsPerPage:16,
+        objectsPerPage:2,
         /** Tags per page */
-        tagsPerPage:8,
+        tagsPerPage:2,
         /** Categories per page */
-        categoriesPerPage:8,
+        categoriesPerPage:2,
     },
     collections:{
         /** Assets linked to element,categories and other */

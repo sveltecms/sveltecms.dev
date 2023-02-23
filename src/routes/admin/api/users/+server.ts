@@ -5,7 +5,6 @@ import svelteCMS from "$svelteCMS"
 import { json } from "@sveltejs/kit"
 import type { RequestHandler } from "./$types"
 import type { ApiUserCreateLoad,ApiUserCreateData, ApiUserDeleteLoad, ApiUserDeleteData, ApiUserUpdateLoad, ApiUserUpdateData } from "$Types"
-import type { UserLoad } from "$Types"
 import type { FetchUsersLoad } from "$Types/cms"
 import { ObjectId } from "mongodb"
 
@@ -13,7 +12,7 @@ import { ObjectId } from "mongodb"
 export const PATCH:RequestHandler = async({ request }) => {
     const jsonData:FetchUsersLoad = await request.json()
     const pageNumber = jsonData.pageNumber
-    const filter = jsonData.filter
+    const filter = jsonData.filter ? { firstName:new RegExp(jsonData.filter.firstName,"ig" )} : {}
     const count = jsonData.count
     const users = await cms.Fetch.users({ count:count,pageNumber,filter})
     return json(users)
@@ -31,7 +30,7 @@ export const PUT:RequestHandler = async({request}) => {
     }
     // Hash password and create new user
     const hashedPassword = await bcrypt.hash(jsonData.password,10)
-    const newUserData:UserLoad = { ...jsonData,password:hashedPassword}
+    const newUserData:any = { ...jsonData,password:hashedPassword}
     // Insert new user
     const userInsertedDB = await usersCollection.insertOne(newUserData)
     if(userInsertedDB.acknowledged){

@@ -42,7 +42,8 @@
         // Update page number
         pageNumber = pageNumber+1
         // Send api request
-        const apiLoad:FetchUsersLoad = { filter:{},count:svelteCMS.config.usersPerPage,pageNumber }
+        const filter = data.query ? { firstName:data.query } : null
+        const apiLoad:FetchUsersLoad = { filter,count:svelteCMS.config.usersPerPage,pageNumber }
         const apiResponse:FetchUsersRes = await fetchPost("PATCH",API_PATH,apiLoad) 
         if(apiResponse.length>0){
             if(apiResponse.length<svelteCMS.config.usersPerPage) resetStages()
@@ -63,6 +64,14 @@
         showLoadMoreBtn = false
         pageNumber = 1
     }
+
+    // When data changes, reset some variables
+    $: if(data.users){
+        showLoadMoreBtn = data.users.length >= svelteCMS.config.usersPerPage
+        pageNumber = 1
+        USERS.set([...data.users])
+    }
+
     // Variables
     /** Indicate when loading more users */
     let loadingMoreUsers:boolean = false
@@ -77,11 +86,12 @@
         description:svelteCMS.site.desc,
         backdrop:svelteCMS.site.backdrop
     }
+    $: title = data.query ? `Result for : ${data.query}` : "Assets"
 </script>
 
 <SvelteHead {...pageData}/>
 {#if $USERS.length > 0}
-    <PageTitleLink href="/admin/users/create" title="Users" icon={PlusIcon}/>
+    <PageTitleLink {title} href="/admin/users/create" icon={PlusIcon}/>
     <Users users={$USERS} on:delete={handleDeleteUser}/>
     {#if showLoadMoreBtn}
         <Button loading={loadingMoreUsers} text="Load more" centerBtn={true} --width="fit-content" on:click={loadMoreUsers}/>

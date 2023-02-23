@@ -34,7 +34,8 @@
         // Update page number
         pageNumber = pageNumber+1
         // Send api request
-        const apiLoad:FetchCategoriesLoad = { filter:{},count:svelteCMS.config.categoriesPerPage,pageNumber,routeID }
+        const filter = data.query ? { name:data.query } : {}
+        const apiLoad:FetchCategoriesLoad = { filter,count:svelteCMS.config.categoriesPerPage,pageNumber,routeID }
         const apiResponse:FetchCategoriesRes = await fetchPost("PATCH",API_PATH,apiLoad) 
         if(apiResponse.length>0){
             if(apiResponse.length<svelteCMS.config.categoriesPerPage) resetStages()
@@ -58,7 +59,7 @@
     // Variable
     $: categories = data.categories
     $: routeID = data.routeID
-    $: title = `${capitalize(routeID)}'s categories`
+    $: title = data.query ? `Result for : ${data.query}` : `${capitalize(routeID)}'s categories`
     $: newCategoryLink = `/admin/categories/${routeID}/create`
     $: showLoadMoreBtn = data.categories.length >= svelteCMS.config.categoriesPerPage
     let pageNumber = 1

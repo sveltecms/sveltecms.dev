@@ -2,10 +2,11 @@ import cms from "$Cms"
 import svelteCMS from "$svelteCMS"
 import type { PageServerLoad } from "./$types"
 
-export const load:PageServerLoad = async({parent})=>{
-    // If routeID do not exists, +layout.server.ts will throw error
+export const load:PageServerLoad = async({parent,url})=>{
     const parentData = await parent()
     const routeID = parentData.routeID
-    const tags = await cms.Fetch.tags({routeID,count:svelteCMS.config.tagsPerPage,filter:{}})
-    return { tags }
+    const query = url.searchParams.get("q")
+    const filter = query ? { name:new RegExp(query,"gi") } : {}
+    const tags = await cms.Fetch.tags({filter,routeID,count:svelteCMS.config.tagsPerPage})
+    return { tags,query }
 }

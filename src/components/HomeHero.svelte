@@ -1,7 +1,7 @@
 <div class="home">
     <div class="left">
         <h2>svelte<span>CMS</span></h2>
-        <h3>All in one svelte kit content management system</h3>
+        <h3>All in one CMS for your svelteKit apps.</h3>
         <p>Add a cms to your svelte projects without having to leave your work folder.</p>
         <div class="buttons">
             <a href="/docs" class="button">Get started</a>
@@ -75,10 +75,10 @@
             text-align: center;
             margin-right: 0px;
             h2{
-                font-size: 40px;
+                font-size: 50px;
             }
             h3{
-                font-size: 25px;
+                font-size: 20px;
             }
             p{
                 font-size: 14px;

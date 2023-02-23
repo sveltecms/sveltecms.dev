@@ -1,4 +1,5 @@
 import { writable, type Writable } from "svelte/store";
+import { page } from "$app/stores"
 import type { RouteData, UserData, AssetData} from "$Types"
 
 /** Is nav open when browsing mobiles or not  */
@@ -18,3 +19,9 @@ export const PREV_PATH:Writable<string> = writable("/admin")
 
 /** Current logged on user */
 export const USER:Writable<UserData|null> = writable(null)
+
+/** Search props */
+export const SEARCH = writable({
+    query:"",
+    fetching:false
+})

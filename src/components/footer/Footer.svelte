@@ -1,6 +1,6 @@
 <footer class="mainFooter">
     <div class="content">
-        <h2>FOOTER</h2>
+        <h2>svelteCMS</h2>
     </div>
 </footer>
 

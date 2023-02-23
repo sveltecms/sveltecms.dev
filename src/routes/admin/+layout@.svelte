@@ -5,7 +5,8 @@
     import type { LayoutServerData } from "./$types"
     // Other
     import { beforeNavigate } from "$app/navigation";
-    import { PREV_PATH, ROUTES } from "$Stores"
+    import { page } from "$app/stores"
+    import { PREV_PATH, ROUTES, SEARCH } from "$Stores"
     // Packages
     import Toasts from "@anthony809/svelte-toasts/Toasts.svelte";
     // Components
@@ -14,25 +15,22 @@
     import Footer from "$Comps/core/footer/Footer.svelte";
     // Set stores
     ROUTES.set(data.routes)
+    SEARCH.set({ query:$page.url.searchParams.get("q") || "",fetching:false })
     // Update previously path
     beforeNavigate(()=>PREV_PATH.set(location.pathname))
 </script>
 
-{#if data.user}
-    <Toasts />
-    <div class="app">
-        <MainNav />
-        <div class="content">
-            <TopNav />
-            <main class="mainContent">
-                <slot />
-                <Footer />
-            </main>
-        </div>
+<Toasts />
+<div class="app">
+    <MainNav />
+    <div class="content">
+        <TopNav />
+        <main class="mainContent">
+            <slot />
+            <Footer />
+        </main>
     </div>
-{:else}
-    <slot />
-{/if}
+</div>
 
 <style>
     .app{

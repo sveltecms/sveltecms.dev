@@ -34,7 +34,8 @@
         // Update page number
         pageNumber = pageNumber+1
         // Send api request
-        const apiLoad:FetchRouteObjectsLoad = { filter:{},routeID,count:svelteCMS.config.objectsPerPage,pageNumber }
+        const filter = data.query ? { _id:data.query } : { _id:"00000000000000000000000"}
+        const apiLoad:FetchRouteObjectsLoad = { filter,routeID,count:svelteCMS.config.objectsPerPage,pageNumber }
         const apiResponse:FetchRouteObjectsRes = await fetchPost("PATCH",API_PATH,apiLoad) 
         if(apiResponse.length>0){
             if(apiResponse.length<svelteCMS.config.objectsPerPage) resetStages()
@@ -65,7 +66,7 @@
     /** Current page number */
     let pageNumber:number = 1
     /** Indicate if show load more button or not */
-    let showLoadMoreBtn:boolean = data.routeObjects.length >= svelteCMS.config.objectsPerPage
+    $: showLoadMoreBtn = data.routeObjects.length >= svelteCMS.config.objectsPerPage
     const pageData = {
         appName:svelteCMS.site.name,
         favicon:svelteCMS.site.favicon,
@@ -73,10 +74,11 @@
         description:data.routeData.meta.description,
         backdrop:svelteCMS.site.backdrop
     }
+    $: title = data.query ? `Result for : ${data.query}` : routeID
 </script>
 
 <SvelteHead {...pageData}/>
-<PageTitleLink title={capitalize(routeData.title)} href="/admin/objects/{routeData.ID}/create" linkText="Add object" goBackSrc="/admin/routes"/>
+<PageTitleLink {title} href="/admin/objects/{routeData.ID}/create" linkText="Add object" goBackSrc={`/admin/objects/${routeID}`}/>
 {#if routeObjects.length > 0}
     <Objects objects={routeObjects} on:delete={handleObjectDeletion}/>
     {#if showLoadMoreBtn}
