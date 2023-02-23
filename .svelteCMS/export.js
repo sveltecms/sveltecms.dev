@@ -25,7 +25,7 @@ const dbConnection = new MongoClient(DATABASE_URL)
 const COLLECTIONS = await dbConnection.db(DATABASE_NAME).listCollections({}).toArray()
 
 for(const collection of COLLECTIONS){
-    execSync(`mongoexport --uri="${DATABASE_URL}" --db=${DATABASE_NAME}  --collection=${collection.name}  --out=${dbFolderPath}/${collection.name}.json`)
+    execSync(`mongoexport --uri="${DATABASE_URL}" --db=${DATABASE_NAME}  --collection=${collection.name}  --out=${dbFolderPath}/${collection.name}.json --authenticationDatabase=admin`)
 }
 
 await dbConnection.close()

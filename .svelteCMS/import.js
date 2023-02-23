@@ -26,7 +26,7 @@ const COLLECTIONS = fs.readdirSync(dbFolderPath)
 
 for(const collection of COLLECTIONS){
     const collectionName = collection.slice(0,-5)
-    execSync(`mongoimport --uri="${DATABASE_URL}" --db=${DATABASE_NAME}  --collection=${collectionName}  --file=${dbFolderPath}/${collectionName}.json`)
+    execSync(`mongoimport --uri="${DATABASE_URL}" --db=${DATABASE_NAME}  --collection=${collectionName}  --file=${dbFolderPath}/${collectionName}.json --authenticationDatabase=admin`)
 }
 
 await dbConnection.close()
