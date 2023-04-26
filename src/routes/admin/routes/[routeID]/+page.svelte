@@ -1,115 +1,46 @@
 <script lang="ts">
-    /**
-     * This page can be use for new route and edit route
-     * only need to change (routeData, add export let data:PageParentData and publish function)
-     * checkForErrors is set to true when editing route 
-     * Publish button label change to Update route
-     */
-    export let data:PageServerData
-    import type { PageServerData } from "./$types"
-    const routeData:RouteData = data.routeData
-    const API_PATH = "/admin/api/routes"
-    let checkForErrors:boolean = true
-    let publishing:boolean = false
-    $: errorOnField = {
-        ID: checkForErrors && routeData.ID.trim().length===0,
-        title: checkForErrors && routeData.title.trim().length===0,
-        meteTitle: checkForErrors && routeData.meta.title.trim().length===0,
-        metaDescription: checkForErrors && routeData.meta.description.trim().length===0,
-        emptyElements: checkForErrors && routeData.elements.length===0
-    }
-    // Types
-    import type { RouteData, ElementData,ApiRouteUpdateLoad, ApiRouteUpdateData } from "$Types"
-    import svelteCMS from "$svelteCMS";
-    import SvelteHead from "@anthony809/svelte-head"
-    // SVELTE
-    import { goto } from "$app/navigation";
-    // STORES
-    import { ROUTES } from "$Stores"
-    // Utils
-    import { wait,fetchPost,validateRoute } from "$Utilities";
-    // Icons
-    import SaveIcon from "$Icons/Globe.svelte"
-    // Packages
-    import { newToast } from "@anthony809/svelte-toasts/index";
-    // Components
-    import PageTitleLink from "$Comps/PageTitleLink.svelte";
-    // Elements comps
-    import Label from "$Elements/Label.svelte";
-    import LabelSelector from "$Elements/LabelSelector.svelte";
-    import Textarea from "$Elements/Textarea.svelte";
-    import Input from "$Elements/Input.svelte";
-    import Button from "$Comps/Button.svelte";
-    import Elements from "$Comps/routes/newRoute/elements/Elements.svelte";
-    import ElementEditor from "$Comps/routes/newRoute/ElementEditor.svelte";
-    // Route comps
-    import Content from "$Comps/routes/Content.svelte";
-    import RightContent from "$Comps/routes/RightContent.svelte";
-    import LeftContent from "$Comps/routes/LeftContent.svelte";
+    export let data: PageData;
+    import type { PageData } from './$types';
+    import type { RouteObjectData } from 'cms/types';
+    import type { DeleteObjectFunc } from 'cms/funcs';
+    import Utils from "cms/utils"
+    import PageTitle from 'cms/components/shared/PageTitle.svelte';
+    import Objects from "cms/components/shared/objects/Objects.svelte"
+    import NoResult from "cms/components/shared/NoResult.svelte"
+    import Pagination from "cms/components/shared/Pagination.svelte";
+    import { addToast } from 'cms/packages/toasts';
+    $: objects = data.objects
+    $: routeID = data.routeData.ID
+    let deleting:boolean = false
 
-    /** Add new element to route's elements */
-    function addNewElement(e:any){
-        const element:ElementData = {...e.detail}
-        const elementExists = routeData.elements.find(data=>data.ID===element.ID)
-        // Add element if it do not exists
-        if(!elementExists){ routeData.elements = [...routeData.elements,element] }
-        // Else send alert
-        else newToast({type:"error",msg:`Element ID:${element.ID} already exists`})
-    }
-
-    /** Publish new route */
-    async function publish() {
-        checkForErrors = true // Set check for empty fields
-        publishing = true // Set spinner for publish button
-        // Send request
-        const validatorErrors = validateRoute(routeData)
-        const validated = validatorErrors.length === 0
-        if(validated){
-            const apiData:ApiRouteUpdateLoad = routeData
-            const apiResponse:ApiRouteUpdateData = await fetchPost("POST",API_PATH,apiData)
-            // If route was created
-            if(apiResponse.ok){
-                newToast({ type:"ok",msg:apiResponse.msg })
-                ROUTES.set([...$ROUTES,apiResponse.routeData])
-                await wait(1000)
-                goto("/admin/routes")
-            }
-            // If route was not created, throw error msg
-            else newToast({ type:"error",msg:apiResponse.msg })
+    /** Handle delete route object */
+    async function deleteObject(e:any){
+        // set deleting stage
+        deleting = true
+        // send delete request
+        const object:RouteObjectData = e.detail
+        const apiLoad:DeleteObjectFunc['input'] = { name:"deleteObject",data:{ routeID,object } }
+        const apiResponse:DeleteObjectFunc['output'] = await Utils.fetch("/",apiLoad)
+        // Show api response message
+        // If route object was deleted
+        if(apiResponse.ok){
+            await Utils.sleep(500)
+            addToast({ type:"ok",msg:apiResponse.msg })
+            // remove deleted object from objects list
+            const newObjectsList = objects.filter(data=>data._id!==object._id)
+            objects = [...newObjectsList]
         }
-        else newToast({ type:"error",msg:validatorErrors[0].msg })
-        await wait(1000) // Wait 1 second before removing spinner and
-        publishing = false // Remove spinner for publish button
-    }
-    const pageData = {
-        appName:svelteCMS.site.name,
-        favicon:svelteCMS.site.favicon,
-        title:"Editing route",
-        description:svelteCMS.site.desc,
-        backdrop:svelteCMS.site.backdrop
+        // If route object was not deleted
+        else addToast({ type:"error",msg:apiResponse.msg })
+        // remove deleting stage
+        await Utils.sleep(500)
+        deleting = false
     }
 </script>
 
-<SvelteHead {...pageData}/>
-<PageTitleLink href="/admin/routes" linkText="All routes" title="Adding route" goBackSrc="/admin/routes"/>
-<Content>
-    <LeftContent>
-        {#if !routeData._id}
-            <Label text="ID" error={errorOnField.ID}/>
-            <Input placeholder="Route id..." bind:value={routeData.ID} />
-        {/if}
-        <Label text="Title" error={errorOnField.title} />
-        <Input placeholder="Route title..." bind:value={routeData.title} />
-        <Label text="Page info" error={errorOnField.meteTitle}/>
-        <Input placeholder="Page title..." bind:value={routeData.meta.title} />
-        <Textarea placeholder="Page description..." bind:value={routeData.meta.description} />
-        <Label text="Route elements" error={errorOnField.emptyElements}/>
-        <Elements bind:elements={routeData.elements}/>
-    </LeftContent>
-    <RightContent>
-        <ElementEditor error={errorOnField.emptyElements} on:change={addNewElement}/>
-        <LabelSelector bind:value={routeData.includeCategories} text="Add categories" options={["yes","no"]}/>
-        <LabelSelector bind:value={routeData.includeTags} text="Add tags" options={["yes","no"]}/>
-        <Button text="Update Route" icon={SaveIcon} bind:loading={publishing} on:click={publish}/>   
-    </RightContent>
-</Content> 
+<PageTitle title={`${data.routeData.ID} objects`} goBackHref="/routes" link={{ href:`/routes/${routeID}/new-object`,text:"Add object" }}/>
+<Objects bind:deleting {objects} on:delete={deleteObject}/>
+{#if objects.length===0}
+    <NoResult title="No objects founded" subTitle="Please create new object to be displayed here" hrefText="Create object" href={`/routes/${routeID}/new-object`}/>
+{/if}
+<Pagination baseDir={`routes/${routeID}`} itemsCount={data.count} page={data.page} itemsPerPage={data.itemsPerPage}/>

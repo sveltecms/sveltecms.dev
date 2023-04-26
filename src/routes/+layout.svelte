@@ -1,13 +1,13 @@
 <script lang="ts">
-    import Layout from "./Layout.svelte";
+    import AppLayout from "./Layout.svelte";
     import { page } from "$app/stores";
-    $: isAdminRoute = $page.url.pathname.includes("/admin")
+    $: isAdminRoute = $page.url.pathname.startsWith("/admin")
 </script>
 
 {#if isAdminRoute}
     <slot />
 {:else}
-    <Layout>
+    <AppLayout>
         <slot />
-    </Layout>
+    </AppLayout>
 {/if}

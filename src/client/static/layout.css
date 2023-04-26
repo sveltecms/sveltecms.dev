@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap');
+.client{
+    --maxWidth:1200px;
+    --mainColor: #3B88C3;
+    --textColor: #c6c6c6;
+    --headerColor: #e0e0e0;
+    --bodyBg: linear-gradient(to top right, #252632,#232732);
+    --antiBodyBg: #1f2127;
+    --navBg: #1f2127eb;
+    --navColor: #d3d3d3;
+
+    --iconColor: #aaaaaa;
+
+    --buttonColor: white;
+    --buttonBg: #3B88C3;
+
+    --cardBg:#1f2127;
+    --cardColor:#fff;
+
+    scroll-behavior: smooth;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+a{ text-decoration: none;}

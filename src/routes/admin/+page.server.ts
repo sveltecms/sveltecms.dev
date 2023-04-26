@@ -1,22 +1,35 @@
-import cms from "$Cms"
-import svelteCMS from "$svelteCMS"
-import type { PageServerLoad } from "./$types"
+import db from "cms/lib/db.server"
+import handleSessions from "cms/custom/handleSessions.server"
+import { ObjectId } from "mongodb"
+import type { PageServerLoadEvent } from "./$types"
 
-export const load:PageServerLoad = async ()=>{
+export const load = async(event:PageServerLoadEvent)=>{
+    const appData = event.locals.appData
+    const cmsPath = appData.config.cmsPath
+    const assetsCol = db.collection("_assets")
+    const routesCol = db.collection("_routes")
+    const usersCol = db.collection("_users")
+
+    // Delete expired sessions
+    handleSessions(db)
+
     // Get assets count
-    const assets = await cms.Fetch.assets({count:svelteCMS.config.assetsPerPage,filter:null})
-    const assetsCount = await cms.Fetch.assetsCount()
-    // Get routes count
-    const routesCount = await cms.Fetch.routesCount()
-    const routes = await cms.Fetch.routes({ filter:{},count:svelteCMS.config.routesPerPage })
-    // Get users count
-    const usersCount = await cms.Fetch.usersCount()
-    const users = await cms.Fetch.users({ filter:{},count:svelteCMS.config.usersPerPage })
+    const assetsFilter = { _id:{$ne: new ObjectId("000000000000000000000000") } }
+    const assets = await assetsCol.find(assetsFilter).limit(6).sort("_id","desc").map((data:any)=>{ data['_id']=data['_id'].toString() ; return data }).toArray()
+    const assetsCount = await assetsCol.countDocuments(assetsFilter)
+
+    const routes = await routesCol.find({}).limit(3).sort("_id","desc").map((data:any)=>{ data['_id']=data['_id'].toString() ; return data }).toArray()
+    const routesCount = await routesCol.countDocuments()
+    
+    const usersFilter = { _id:{$ne: new ObjectId("000000000000000000000000") } }
+    const users = await usersCol.find(usersFilter).limit(6).sort("_id","desc").map((data:any)=>{ data['_id']=data['_id'].toString() ; return data }).toArray()
+    const usersCount = await usersCol.countDocuments(usersFilter)
+
     // result
     const stats = [
-        { name:"Routes", count:routesCount, href:"/admin/routes" },
-        { name:"Assets", count:assetsCount, href:"/admin/assets" },
-        { name:"Users", count:usersCount, href:"/admin/users" }
+        { name:"Routes", count:routesCount, href:`${cmsPath}/routes` },
+        { name:"Assets", count:assetsCount, href:`${cmsPath}/assets` },
+        { name:"Users", count:usersCount, href:`${cmsPath}/users` }
     ]
     return { stats,users,assets,routes }
 }

@@ -1,10 +1,20 @@
-import cms from "$Cms"
-import svelteCMS from "$svelteCMS"
-import type { PageServerLoad } from "./$types"
+import db from "cms/lib/db.server"
+import type { RouteObjectData } from "cms/types"
+import type { RouteData } from "cms/types"
 
-export const load:PageServerLoad = async({url})=>{
-    const query = url.searchParams.get("q")
-    const filter = query ? { title:new RegExp(query,"gi") } : {}
-    const routes = await cms.Fetch.routes({ filter,count:svelteCMS.config.routesPerPage })
-    return { routes,query }
+export const load = async(event:RouteObjectData)=>{
+    const searchQuery = event.url.searchParams.get("q") 
+    const filter:{[key:string]:any} = { }
+    // Add query if founded
+    if(searchQuery){ filter["ID"] = new RegExp(searchQuery,"ig") }
+
+    const searchPageNum = event.url.searchParams.get("page")
+    const page = searchPageNum ? Number(searchPageNum) : 1
+    const collection = db.collection("_routes")
+    const count = await collection.countDocuments(filter)
+    const itemsPerPage = event.locals.appData.config.routesPerPage
+    const numToSkip = page<=1 ? 0 : itemsPerPage*page - itemsPerPage
+    const cursor = collection.find(filter).skip(numToSkip).limit(itemsPerPage).sort("_id","desc").map((data:any)=>{ data['_id']=data['_id'].toString() ; return data})
+    const routes = await cursor.toArray() as RouteData[]
+    return { routes,count,page,itemsPerPage }
 }
