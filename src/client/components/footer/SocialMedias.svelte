@@ -14,14 +14,10 @@
 
 <style lang="scss">
     .socialMedias{
-        border-radius: 2px;
-        border-left: 1.5px solid #65676ba7;
-        border-right: 1.5px solid #65676ba7;
-        margin: 0px 20px;
-        padding: 0px 20px;
         display: flex;
         align-items: center;
         gap: 20px;
+        margin-left: 10px;
     }
     .media{
         display: flex;
