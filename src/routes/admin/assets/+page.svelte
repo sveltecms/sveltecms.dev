@@ -39,7 +39,6 @@
             const newAssetsList = assets.map(data=>{
                 if(data.assetID===asset.assetID){
                     data = asset
-                    console.log(asset)
                 }
                 return data
             })
@@ -78,8 +77,7 @@
     /** Handle asset uploaded*/
     function handleAssetUploaded(e:any){
         const newAsset:AssetData = e.detail
-        assets = [newAsset,...assets.slice(0,-1)]
-        console.log(assets)
+        assets = [newAsset,...assets]
     }
 </script>
 

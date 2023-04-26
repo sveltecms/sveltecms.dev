@@ -6,7 +6,7 @@
 <ul class="navLinks">
     <Link href="/" title="Home"/>
     <Link href="/docs" title="Docs"/>
-    <Link href="https://kit.svelte.dev/" title="SvelteKit" icon={SvelteIcon} attributes={{ target:"_blank"}}/>
+    <Link href="https://svelte.dev/" title="Svelte" icon={SvelteIcon} attributes={{ target:"_blank"}}/>
 </ul>
 
 <style>

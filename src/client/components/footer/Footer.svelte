@@ -1,6 +1,11 @@
+<script>
+    import SocialMedias from "./SocialMedias.svelte";
+</script>
+
 <footer class="mainFooter">
     <div class="content">
-        <h2>svelteCMS</h2>
+        <p>©svelteCMS</p>
+        <SocialMedias />
     </div>
 </footer>
 
@@ -15,7 +20,7 @@
         margin: auto;
         color: white;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         text-transform: uppercase;
     }
 </style>
