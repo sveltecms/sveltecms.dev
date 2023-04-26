@@ -1,96 +1,94 @@
 <script lang="ts">
-    const API_PATH = "/admin/api/assets"
-    export let data:PageServerData
-    ASSETS.set(data.assets)
-    import type { PageServerData } from "./$types"
-    import type { AssetData } from "$Types";
-    import type { FetchAssetsLoad,FetchAssetsRes } from "$Types/cms";
-    import svelteCMS from "$svelteCMS";
-    import SvelteHead from "@anthony809/svelte-head"
-    import { ASSETS } from "$Stores"
-    import { wait,fetchPost } from "$Utilities"
-    // Icons
-    import PlusIcon from "$Icons/Plus.svelte";
-    // Components
-    import TitleButton from "$Comps/PageTitleButton.svelte";
-    import FileUploader from "$Packages/fileUploader/FileUploader.svelte";
-    import Assets from "$Comps/shared/assets/Assets.svelte"
-    import Button from "$Comps/Button.svelte"
-    import NoResult from "$Comps/NoResult.svelte";
-    /** Handle file selected from file uploader */
-    async function handleFileSelect(e:any) {
-        const selectedAsset:AssetData = e.detail
-        // Check if selected assets exists in assets list
-        const assetInAssets = assets.find(data=>data._id===selectedAsset._id)
-        // Add selected asset to assets list
-        if(!assetInAssets){
-            ASSETS.set([...$ASSETS,selectedAsset])
-            assets = [...assets,selectedAsset]
-        }
-    }
-    /** Load more assets */
-    async function loadMoreAssets() {
-        // Set loading more assets
-        isGettingMoreAssets = true
-        // Update page number
-        pageNumber = pageNumber+1
-        // Send api request
-        const filter = data.query ? { name:data.query } : null
-        const apiLoad:FetchAssetsLoad = { filter, count:svelteCMS.config.assetsPerPage,pageNumber }
-        const apiResponse:FetchAssetsRes = await fetchPost("PATCH",API_PATH,apiLoad) 
-        if(apiResponse.length>0){
-            if(apiResponse.length<svelteCMS.config.assetsPerPage) resetStages()
-            // Wait 500 milliseconds
-            await wait(500)
-            // Marge assets with response assets
-            ASSETS.set([...$ASSETS,...apiResponse])
-        }
-        // Reset stages
-        else await resetStages()
-        // Remove loading more assets
-        isGettingMoreAssets = false
-    }
-    /** Reset stages */
-    async function resetStages(){
-        // Wait 500 milliseconds
-        await wait(500)
-        showLoadMoreBtn = false
-        pageNumber = 1
+    export let data: PageData;
+    import type { PageData } from './$types';
+    import type { AssetData } from 'cms/types';
+    import type { UpdateAssetFunc,DeleteAssetFunc } from 'cms/funcs';
+    import Utils from "cms/utils"
+    import { addToast } from 'cms/packages/toasts';
+    import MetaData from "cms/components/shared/MetaData.svelte";
+    import PageTitle from 'cms/components/shared/PageTitle.svelte';
+    import Assets from "cms/components/shared/assets/assets.svelte"
+    import AssetEditor from 'cms/components/shared/assetEditor.svelte';
+    import NoResult from "cms/components/shared/NoResult.svelte"
+    import Pagination from "cms/components/shared/Pagination.svelte";
+    import FileExplorer from 'cms/components/shared/fileExplorer/fileExplorer.svelte';
+    $: assets = data.assets
+    let asset:AssetData
+    let assetEditorOpen:boolean = false
+    let updating:boolean = false
+    let deleting:boolean = false
+    let showFileExplorer:boolean = false
+
+    /** update asset using e.detail=AssetData from event*/
+    async function setAssetToUpdate(e:any) {
+        const assetData:AssetData = e.detail
+        asset = assetData
+        assetEditorOpen = true
     }
 
-    // When data changes, reset some variables
-    $: if(data.assets){
-        showLoadMoreBtn = data.assets.length >= svelteCMS.config.assetsPerPage
-        pageNumber = 1
-        ASSETS.set([...data.assets])
+     /** update asset */
+     async function updateAsset() {
+        updating = true
+        const apiLoad:UpdateAssetFunc['input'] = { name:"updateAsset",data:asset }
+        const response:UpdateAssetFunc['output'] = await Utils.fetch("/",apiLoad)
+        await Utils.sleep(1000)
+        // show msg with response message
+        if(response.ok){
+            addToast({ msg:response.msg,type:"ok" })
+            // update updated asset in assets list
+            const newAssetsList = assets.map(data=>{
+                if(data.assetID===asset.assetID){
+                    data = asset
+                    console.log(asset)
+                }
+                return data
+            })
+            assets = [...newAssetsList]
+        }
+        else addToast({ msg:response.msg,type:"error" })
+        await Utils.sleep(1000)
+        assetEditorOpen = false
+        updating = false
     }
 
-    // Variables 
-    /** Indicate if file uploader is open or not */
-    let isFileUploaderOpen:boolean = false
-    let assets = data.assets
-    let showLoadMoreBtn:boolean = $ASSETS.length >= svelteCMS.config.assetsPerPage
-    let pageNumber = 1
-    /** Indicate when loading more assets */
-    let isGettingMoreAssets = false
-    const pageData = {
-        appName:svelteCMS.site.name,
-        favicon:svelteCMS.site.favicon,
-        title:"Assets",
-        description:svelteCMS.site.desc,
-        backdrop:svelteCMS.site.backdrop
+    /** delete asset */
+    async function deleteAsset() {
+        deleting = true
+        const apiLoad:DeleteAssetFunc['input'] = { name:"deleteAsset",data:asset }
+        const response:DeleteAssetFunc['output'] = await Utils.fetch("/",apiLoad)
+        // show msg with response message
+        if(response.ok){
+            await Utils.sleep(500)
+            addToast({ msg:response.msg,type:"ok" })
+            await Utils.sleep(500)
+            // remove deleted asset from assets list
+            const newAssetsList = assets.filter(data=>data.assetID!==asset.assetID)
+            assets = [...newAssetsList]
+        }
+        else addToast({ msg:response.msg,type:"error" })
+        await Utils.sleep(500)
+        assetEditorOpen = false
+        deleting = false
     }
-    $: title = data.query ? `Result for : ${data.query}` : "Assets"
+    /** Handle page title button click */
+    function handleTitleClick(){
+        showFileExplorer = !showFileExplorer
+    }
+
+    /** Handle asset uploaded*/
+    function handleAssetUploaded(e:any){
+        const newAsset:AssetData = e.detail
+        assets = [newAsset,...assets.slice(0,-1)]
+        console.log(assets)
+    }
 </script>
 
-<SvelteHead {...pageData}/>
-<FileUploader allowSelection={false} bind:open={isFileUploaderOpen} on:select={handleFileSelect}/>
-{#if $ASSETS.length > 0}
-    <TitleButton {title} on:click={()=>isFileUploaderOpen=true} icon={PlusIcon}/>
-    <Assets assets={$ASSETS}/>
-    {#if showLoadMoreBtn}
-        <Button loading={isGettingMoreAssets} text="Load more" centerBtn={true} --width="fit-content" on:click={loadMoreAssets}/>
-    {/if}
-{:else}
-    <NoResult title="No assets" subTitle="Please some assets" href="/admin/assets" hrefText="Add assets" on:click={()=>isFileUploaderOpen=true}/>
+<FileExplorer bind:open={showFileExplorer} on:assetUploaded={handleAssetUploaded}/>
+<MetaData title="Assets"/>
+<PageTitle title="Assets" btnText="Upload" on:click={handleTitleClick} on:keypress={handleTitleClick}/>
+<AssetEditor {updating} {deleting} bind:open={assetEditorOpen} bind:asset on:update={updateAsset} on:delete={deleteAsset}/>
+<Assets {assets} on:assetClick={setAssetToUpdate}/>
+{#if assets.length===0}
+    <NoResult title="No assets founded" subTitle="Please create new asset to be displayed here" hrefText="Upload asset" href="/assets" on:click={()=>showFileExplorer=true}/>
 {/if}
+<Pagination baseDir="assets" itemsCount={data.count} page={data.page} itemsPerPage={data.itemsPerPage}/>

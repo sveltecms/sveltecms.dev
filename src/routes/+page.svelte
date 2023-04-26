@@ -1,20 +1,14 @@
 <script>
-    import { cardsData } from "$src/data";
-    import SvelteHead from "@anthony809/svelte-head"
-    import Cards from "$comps/cards/Cards.svelte";
-    import PageTitle from "$comps/PageTitle.svelte";
-    import Terminal from "$comps/Terminal.svelte";
-    import HomeHero from "$comps/HomeHero.svelte";
-    const pageData = {
-        appName:"svelteCMS",
-        favicon:"/favicon.png",
-        title:"Home",
-        description:"Svelte head is a component to easily add and update svelte route pages's meta information.",
-        backdrop:"/backdrop.png"
-    }
+    import { cardsData } from "client/data";
+    import Cards from "client/components/cards/Cards.svelte";
+    import PageTitle from "client/components/PageTitle.svelte";
+    import Terminal from "client/components/Terminal.svelte";
+    import HomeHero from "client/components/HomeHero.svelte";
+    // cms comps and utils
+    import MetaData from "cms/components/shared/MetaData.svelte"
 </script>
 
-<SvelteHead {...pageData}/>
+<MetaData />
 <HomeHero />
 <Cards data={cardsData}/>
 <PageTitle title="Add to a svelteKit project"/>

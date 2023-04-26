@@ -1,110 +1,94 @@
 <script lang="ts">
-    const API_PATH = "/admin/api/routes"
+    import type { ElementData, RouteLoad } from "cms/types"
+    import type { CreateRouteFunc } from "cms/funcs"
+    import { page } from "$app/stores"
+    import { goto } from "$app/navigation"
+    import Utils from "cms/utils"
+    // packages
+    import { addToast } from "cms/packages/toasts"
+    // components
+    import MetaData from "cms/components/shared/MetaData.svelte"
+    import PageTitle from "cms/components/shared/PageTitle.svelte"
+    import Content from "cms/components/shared/layout/Content.svelte"
+    import LeftContent from "cms/components/shared/layout/LeftContent.svelte"
+    import Label from "cms/components/shared/Label.svelte"
+    import Button from "cms/components/shared/Button.svelte"
+    import AddElement from "cms/components/shared/addElement/addElement.svelte"
+    import NoResultText from "cms/components/shared/NoResultText.svelte"
+    import Elements from "cms/components/shared/elements/Elements.svelte"
+    // elements
+    import Input from "cms/components/elements/Input.svelte"
+    import TextArea from "cms/components/elements/TextArea.svelte"
+    // icons
+    import CloudPlusIcon from "cms/icons/CloudPlus.svelte"
+    let appData = $page.data.appData
+    let wasRouteIdClick:boolean = false
+    let addingElement:boolean = false
+    let loading:boolean = false
     let checkForErrors:boolean = false
-    let publishing:boolean = false
-    const routeData:RouteData|RouteLoad = {
-        ID:"", title:"", includeCategories:"yes", includeTags:"yes",
-        meta: { title: "",description: "" },elements: []
-    }
-    $: errorOnField = {
-        ID: checkForErrors && routeData.ID.trim().length===0,
-        title: checkForErrors && routeData.title.trim().length===0,
-        meteTitle: checkForErrors && routeData.meta.title.trim().length===0,
-        metaDescription: checkForErrors && routeData.meta.description.trim().length===0,
-        emptyElements: checkForErrors && routeData.elements.length===0
-    }
-    // Types
-    import type { RouteLoad, RouteData, ElementData,ApiRouteCreateLoad, ApiRouteCreateData } from "$Types"
-    import svelteCMS from "$svelteCMS";
-    import SvelteHead from "@anthony809/svelte-head"
-    // SVELTE
-    import { goto } from "$app/navigation";
-    // STORES
-    import { ROUTES } from "$Stores"
-    // Utils
-    import { wait,fetchPost,validateRoute } from "$Utilities";
-    // Icons
-    import SaveIcon from "$Icons/Globe.svelte"
-    // Packages
-    import { newToast } from "@anthony809/svelte-toasts/index";
-    // Components
-    import PageTitleLink from "$Comps/PageTitleLink.svelte";
-    // Elements comps
-    import Label from "$Elements/Label.svelte";
-    import LabelSelector from "$Elements/LabelSelector.svelte";
-    import Textarea from "$Elements/Textarea.svelte";
-    import Input from "$Elements/Input.svelte";
-    import Button from "$Comps/Button.svelte";
-    import Elements from "$Comps/routes/newRoute/elements/Elements.svelte";
-    import ElementEditor from "$Comps/routes/newRoute/ElementEditor.svelte";
-    // Route comps
-    import Content from "$Comps/routes/Content.svelte";
-    import RightContent from "$Comps/routes/RightContent.svelte";
-    import LeftContent from "$Comps/routes/LeftContent.svelte";
+    let title:string = ""
+    let routeID:string = ""
+    let searchAbleKey:string = ""
+    let metaTitle:string = ""
+    let metaDescription:string = ""
+    let elements:ElementData[] = []
 
-    /** Add new element to route's elements */
-    function addNewElement(e:any){
-        const element:ElementData = {...e.detail}
-        const elementExists = routeData.elements.find(data=>data.ID===element.ID)
-        // Add element if it do not exists
-        if(!elementExists){ routeData.elements = [...routeData.elements,element] }
-        // Else send alert
-        else newToast({type:"error",msg:`Element ID:${element.ID} already exists`})
-    }
-
-    /** Publish new route */
-    async function publish() {
-        checkForErrors = true // Set check for empty fields
-        publishing = true // Set spinner for publish button
-        // Send request
-        const validatorErrors = validateRoute(routeData)
-        const validated = validatorErrors.length === 0
-        if(validated){
-            const apiData:ApiRouteCreateLoad = routeData
-            const apiResponse:ApiRouteCreateData = await fetchPost("PUT",API_PATH,apiData)
-            // If route was created
-            if(apiResponse.ok){
-                newToast({ type:"ok",msg:apiResponse.msg })
-                ROUTES.set([...$ROUTES,apiResponse.routeData])
-                await wait(1000)
-                goto("/admin/routes")
-            }
-            // If route was not created, throw error msg
-            else newToast({ type:"error",msg:apiResponse.msg })
+    /** Add new route */
+    async function createRoute() {
+        checkForErrors = true
+        loading = true
+        const newRouteData:RouteLoad = {
+            ID: routeID,title,searchAbleKey,
+            meta: { title: metaTitle, description: metaDescription },
+            elements,
         }
-        else newToast({ type:"error",msg:validatorErrors[0].msg })
-        await wait(1000) // Wait 1 second before removing spinner and
-        publishing = false // Remove spinner for publish button
+        const errors = Utils.validateObjectData(newRouteData)
+        // if data was validated
+        if(errors.length===0){
+            const apiLoad:CreateRouteFunc['input'] = { name:"createRoute",data:newRouteData }
+            const apiResponse:CreateRouteFunc['output'] = await Utils.fetch("/",apiLoad)
+            // if route was created
+            if(apiResponse.ok){
+                addToast({ type:"ok",msg:apiResponse.msg })
+                await Utils.sleep(500)
+                // go to routes
+                goto(`${appData.config.cmsPath}/routes`)
+            }
+            // else if user was not created
+            else{ addToast({ type:"error",msg:apiResponse.msg }) }
+        }
+        // show error message
+        else addToast({ type:"error",msg:errors[0] })
+        await Utils.sleep(500)
+        // reset stages
+        loading = false
     }
-    const pageData = {
-        appName:svelteCMS.site.name,
-        favicon:svelteCMS.site.favicon,
-        title:"Create route",
-        description:svelteCMS.site.desc,
-        backdrop:svelteCMS.site.backdrop
+
+    /** Auto add title as id, this only run if id input was not clicked before */
+    function autoRouteID(e:any){
+        if(!wasRouteIdClick) routeID=title.toLowerCase()
     }
 </script>
 
-<SvelteHead {...pageData}/>
-<PageTitleLink href="/admin/routes" linkText="All routes" title="Adding route" goBackSrc="/admin/routes"/>
+<MetaData title="Create route"/>
+<PageTitle title="Create route" goBackHref="/routes"/>
+<AddElement bind:open={addingElement} bind:elements/>
 <Content>
     <LeftContent>
-        {#if !routeData._id}
-            <Label text="ID" error={errorOnField.ID}/>
-            <Input placeholder="Route id..." bind:value={routeData.ID} />
+        <Label text="Route data" />
+        <Input placeholder="route title..." bind:value={title} on:keyup={autoRouteID} error={checkForErrors && !title.trim()}/>
+        <Input placeholder="route id..." bind:value={routeID} on:keyup={()=>wasRouteIdClick=true} error={checkForErrors && !routeID.trim()}/>
+        <Label text="Key to search objects" />
+        <Input placeholder="searchAbleKey..." bind:value={searchAbleKey} error={checkForErrors && !searchAbleKey.trim()}/>
+        <Label text="Route meta data" />
+        <Input placeholder="title..." bind:value={metaTitle} error={checkForErrors && !metaTitle.trim()}/>
+        <TextArea placeholder="description..." bind:value={metaDescription} error={checkForErrors && !metaDescription.trim()}/>
+        <Label text="Route elements" btnText="Add element" on:click={()=>addingElement=true}/>
+        {#if elements.length===0}
+            <NoResultText title="No elements" subTitle="Please add one element" error={checkForErrors && elements.length===0}/>
+        {:else}
+            <Elements bind:elements/>
         {/if}
-        <Label text="Title" error={errorOnField.title} />
-        <Input placeholder="Route title..." bind:value={routeData.title} />
-        <Label text="Page info" error={errorOnField.meteTitle}/>
-        <Input placeholder="Page title..." bind:value={routeData.meta.title} />
-        <Textarea placeholder="Page description..." bind:value={routeData.meta.description} />
-        <Label text="Route elements" error={errorOnField.emptyElements}/>
-        <Elements bind:elements={routeData.elements}/>
+        <Button {loading} text="Create route" icon={CloudPlusIcon} on:click={createRoute}/>
     </LeftContent>
-    <RightContent>
-        <ElementEditor error={errorOnField.emptyElements} on:change={addNewElement}/>
-        <LabelSelector bind:value={routeData.includeCategories} text="Add categories" options={["yes","no"]}/>
-        <LabelSelector bind:value={routeData.includeTags} text="Add tags" options={["yes","no"]}/>
-        <Button text="Add Route" icon={SaveIcon} bind:loading={publishing} on:click={publish}/>   
-    </RightContent>
-</Content> 
+</Content>

@@ -1,11 +1,10 @@
 <script lang="ts">
-    import css from "../app.css?inline"
-    import Nav from "$comps/nav/Nav.svelte";
-    import Footer from "$comps/footer/Footer.svelte";
+    import"client/static/layout.css"
+    import Nav from "client/components/nav/Nav.svelte";
+    import Footer from "client/components/footer/Footer.svelte";
 </script>
 
-{@html `<style>\n${css}\n</style>`}
-<div class="layout">
+<div class="client">
     <Nav />
     <main>
         <slot />
@@ -14,6 +13,9 @@
 </div>
 
 <style>
+    .client{
+        background: var(--bodyBg);
+    }
     main{
         max-width: 1200px;
         width: 95%;
