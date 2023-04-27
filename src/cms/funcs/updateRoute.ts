@@ -1,9 +1,20 @@
-import db from "cms/lib/db.server"
 import Utils from "cms/utils/server"
-import type { RequestEvent,UpdateRouteFunc } from "."
+import customFuncs from "../../cms.hooks"
 import { ObjectId } from "mongodb"
+import type { Db } from "mongodb"
+import type { RequestEvent,UpdateRouteFunc } from "."
 
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:UpdateRouteFunc['input'],json:Function) {
+    // run user hook function
+    const hookPassed = await customFuncs.beforeUpdating.route(db,funcInputData.data)
+    if(!hookPassed.ok){
+        const response:UpdateRouteFunc['output'] = {
+            ok:false,
+            msg:hookPassed.msg
+        }
+        return json(response)
+    }
+    // Run code
     const inputData:UpdateRouteFunc['input'] = funcInputData
     const funcData = inputData.data
     // check if route exists
@@ -18,9 +29,9 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
         return json(response)
     }
     // handle linking routes
-    await handleLinkedRoute(inputData)
+    await handleLinkedRoute(db,inputData)
     // handle linking assets
-    await handleLinkedAsset(inputData)
+    await handleLinkedAsset(db,inputData)
     // else update route
     const dataToSet = {...funcData}
     delete dataToSet['_id']
@@ -43,7 +54,7 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
 
 
 /** Handle linking assets */
-async function handleLinkedAsset(inputData:UpdateRouteFunc['input']){
+async function handleLinkedAsset(db:Db,inputData:UpdateRouteFunc['input']){
     const elements = inputData['data'].elements
     const routeID = inputData['data'].ID
     const linkedKeys = Utils.getLinkedAssetKeys(elements,routeID)
@@ -58,7 +69,7 @@ async function handleLinkedAsset(inputData:UpdateRouteFunc['input']){
 }
 
 /** Handle linking routes */
-async function handleLinkedRoute(inputData:UpdateRouteFunc['input']){
+async function handleLinkedRoute(db:Db,inputData:UpdateRouteFunc['input']){
     const elements = inputData['data'].elements
     const routeID = inputData['data'].ID
     const linkedKeys = Utils.getLinkedRouteKeys(elements,routeID)

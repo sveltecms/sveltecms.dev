@@ -1,10 +1,21 @@
-import db from "cms/lib/db.server"
-import type { RequestEvent,UpdateAssetFunc } from "."
 import { ObjectId } from "mongodb"
-import type { LinkedAssetData, LinkedRouteData, RouteObjectData } from "cms/types"
+import customFuncs from "../../cms.hooks"
+import type { Db } from "mongodb"
+import type { RequestEvent,UpdateAssetFunc } from "."
+import type { LinkedAssetData } from "cms/types"
 
 // TODO: update asset on any linked data
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:UpdateAssetFunc['input'],json:Function) {
+    // run user hook function
+    const hookFuncResponse = await customFuncs.beforeUpdating.asset(db,funcInputData.data)
+    if(!hookFuncResponse.ok){
+        const response:UpdateAssetFunc['output'] = {
+            ok:false,
+            msg:hookFuncResponse.msg
+        }
+        return json(response)
+    }
+    // Run code
     const inputData:UpdateAssetFunc['input'] = funcInputData
     const funcData = inputData.data
     let response:UpdateAssetFunc['output']
@@ -16,7 +27,7 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
     const updateRes = await assetsCol.updateOne({ _id:new ObjectId(funcData._id)},{ $set:newAssetData})
     if(updateRes.acknowledged){
         // Handle asset changes
-        handleAssetChanges(funcData)
+        handleAssetChanges(db,funcData)
         // Return response
         response = {
             ok:true,
@@ -34,7 +45,7 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
 }
 
 /** Update asset where asset is linked from */
-async function handleAssetChanges(assetData:UpdateAssetFunc['input']['data']) {
+async function handleAssetChanges(db:Db,assetData:UpdateAssetFunc['input']['data']) {
     const linkedRoutesCol = db.collection("_linkedAssets")
     const linkedAssets = await linkedRoutesCol.find({}).toArray() as LinkedAssetData[]
     // Loop all linked assets

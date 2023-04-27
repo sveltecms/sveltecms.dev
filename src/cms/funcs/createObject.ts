@@ -1,17 +1,11 @@
-import db from "cms/lib/db.server"
 import Utils from "cms/utils/server"
-import { beforeAddingObject } from "cms/hooks"
+import customFuncs from "../../cms.hooks"
+import type { Db } from "mongodb"
 import type { RequestEvent,CreateObjectFunc } from "."
 
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
-    const inputData:CreateObjectFunc['input'] = funcInputData
-    const funcData = inputData.data
-    const elements = funcData.elements
-    const routeID = funcData.routeID
-    const objectData = Utils.elementsToObject(elements)
-    const objectsCol = db.collection(routeID)
-    // run user hook
-    const hookPassed = await beforeAddingObject(db,funcData)
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:CreateObjectFunc['input'],json:Function) {
+    // run user hook function
+    const hookPassed = await customFuncs.beforeAdding.object(db,funcInputData.data)
     if(!hookPassed.ok){
         const response:CreateObjectFunc['output'] = {
             ok:false,
@@ -19,6 +13,13 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
         }
         return json(response)
     }
+    // Run code
+    const inputData:CreateObjectFunc['input'] = funcInputData
+    const funcData = inputData.data
+    const elements = funcData.elements
+    const routeID = funcData.routeID
+    const objectData = Utils.elementsToObject(elements)
+    const objectsCol = db.collection(routeID)
     // Insert object
     const objectInserted = await objectsCol.insertOne(objectData)
     if(objectInserted.acknowledged){

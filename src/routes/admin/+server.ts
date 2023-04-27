@@ -1,3 +1,4 @@
+import db from "cms/lib/db.server"
 import updateSettings from "cms/funcs/updateSettings"
 import uploadFile from "cms/funcs/uploadFile"
 import updateUser from "cms/funcs/updateUser"
@@ -22,27 +23,27 @@ import type { RequestEvent } from "./$types"
 export const POST = async(event:RequestEvent)=> {
     const apiFuncData:ApiFunc['input'] = await event.request.json()
     switch (apiFuncData.name) {
-        case "updateSettings": return updateSettings(event,apiFuncData,json)
-        case "uploadFile": return uploadFile(event,apiFuncData,json)
-        case "updateUser": return updateUser(event,apiFuncData,json) 
-        case "updateAsset": return updateAsset(event,apiFuncData,json)
-        case "deleteAsset": return deleteAsset(event,apiFuncData,json)
-        case "searchAssets": return searchAssets(event,apiFuncData,json)
-        case "createUser": return createUser(event,apiFuncData,json)
-        case "deleteUser": return deleteUser(event,apiFuncData,json)
-        case "createRoute": return createRoute(event,apiFuncData,json)
-        case "updateRoute": return updateRoute(event,apiFuncData,json)
-        case "deleteRoute": return deleteRoute(event,apiFuncData,json)
-        case "createObject": return createObject(event,apiFuncData,json)
-        case "deleteObject": return deleteObject(event,apiFuncData,json)
-        case "updateObject": return updateObject(event,apiFuncData,json)
-        case "getRoutes": return getRoutes(event,apiFuncData,json)
-        case "searchObjects": return searchObjects(event,apiFuncData,json)
+        case "updateSettings": return updateSettings(db,event,apiFuncData,json)
+        case "uploadFile": return uploadFile(db,event,apiFuncData,json)
+        case "updateUser": return updateUser(db,event,apiFuncData,json) 
+        case "updateAsset": return updateAsset(db,event,apiFuncData,json)
+        case "deleteAsset": return deleteAsset(db,event,apiFuncData,json)
+        case "searchAssets": return searchAssets(db,event,apiFuncData,json)
+        case "createUser": return createUser(db,event,apiFuncData,json)
+        case "deleteUser": return deleteUser(db,event,apiFuncData,json)
+        case "createRoute": return createRoute(db,event,apiFuncData,json)
+        case "updateRoute": return updateRoute(db,event,apiFuncData,json)
+        case "deleteRoute": return deleteRoute(db,event,apiFuncData,json)
+        case "createObject": return createObject(db,event,apiFuncData,json)
+        case "deleteObject": return deleteObject(db,event,apiFuncData,json)
+        case "updateObject": return updateObject(db,event,apiFuncData,json)
+        case "getRoutes": return getRoutes(db,event,apiFuncData,json)
+        case "searchObjects": return searchObjects(db,event,apiFuncData,json)
         default: return json({ ok:false,msg:"Method not founded"})
     }
 }
 
 /** Handle all functions with non json */
 export const PUT = async(event:RequestEvent)=> {
-    return uploadFile(event,null,json)
+    return uploadFile(db,event,null,json)
 }

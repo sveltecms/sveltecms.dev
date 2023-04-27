@@ -1,8 +1,19 @@
-import db from "cms/lib/db.server"
+import customFuncs from "../../cms.hooks"
+import type { Db } from "mongodb"
 import type { RequestEvent,DeleteRouteFunc } from "."
 import type { LinkedRouteData } from "cms/types"
 
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:DeleteRouteFunc['input'],json:Function) {
+    // run user hook function
+    const hookFuncResponse = await customFuncs.beforeDeleting.route(db,funcInputData.data)
+    if(!hookFuncResponse.ok){
+        const response:DeleteRouteFunc['output'] = {
+            ok:false,
+            msg:hookFuncResponse.msg
+        }
+        return json(response)
+    }
+    // Run code
     const inputData:DeleteRouteFunc['input'] = funcInputData
     const funcData = inputData.data
     // check if route exists
@@ -25,7 +36,7 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
             data: funcData
         }
         // Handle route deleted
-        handleRouteDeleted(funcData)
+        handleRouteDeleted(db,funcData)
         return json(response)
     }
     // else something went wrong
@@ -37,7 +48,7 @@ export default async function handleFunc(event:RequestEvent,funcInputData:any,js
 }
 
 /** Remove object from any other object linked to route */
-async function handleRouteDeleted(funcData:DeleteRouteFunc['input']['data']){
+async function handleRouteDeleted(db:Db,funcData:DeleteRouteFunc['input']['data']){
     const linkedRoutesCol = db.collection("_linkedRoutes")
     const routesLinks = await linkedRoutesCol.find({ toRouteID:funcData.ID }).toArray() as LinkedRouteData[]
     // Loop all linked routes linking to this route

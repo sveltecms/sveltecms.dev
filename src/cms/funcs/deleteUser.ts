@@ -1,9 +1,20 @@
-import db from "cms/lib/db.server"
 import { ObjectId } from "mongodb"
+import customFuncs from "../../cms.hooks"
+import type { Db } from "mongodb"
 import type { RequestEvent,DeleteUserFunc } from "."
 
 // TODO: update asset on any linked data
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:DeleteUserFunc['input'],json:Function) {
+    // run user hook function
+    const hookFuncResponse = await customFuncs.beforeDeleting.user(db,funcInputData.data)
+    if(!hookFuncResponse.ok){
+        const response:DeleteUserFunc['output'] = {
+            ok:false,
+            msg:hookFuncResponse.msg
+        }
+        return json(response)
+    }
+    // Run code
     const inputData:DeleteUserFunc['input'] = funcInputData
     const funcData = inputData.data
     // check if user with this email exists
