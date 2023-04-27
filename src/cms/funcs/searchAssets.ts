@@ -1,9 +1,9 @@
-import db from "cms/lib/db.server"
+import type { Db } from "mongodb"
 import type { RequestEvent,SearchAssetsFunc } from "."
 import type { AssetData } from "cms/types"
 
 // TODO: update asset on any linked data
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:any,json:Function) {
     const inputData:SearchAssetsFunc['input'] = funcInputData
     const funcData = inputData.data
     // search

@@ -1,8 +1,8 @@
-import db from "cms/lib/db.server"
+import type { Db } from "mongodb"
 import type { RequestEvent,SearchObjectsFunc } from "."
 import type { RouteObjectData } from "cms/types"
 
-export default async function handleFunc(event:RequestEvent,funcInputData:any,json:Function) {
+export default async function handleFunc(db:Db,event:RequestEvent,funcInputData:any,json:Function) {
     const inputData:SearchObjectsFunc['input'] = funcInputData
     const funcData = inputData.data
     const routeID = funcData.routeID
