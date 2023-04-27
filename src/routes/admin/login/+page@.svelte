@@ -13,8 +13,8 @@
     import Submit from "./components/submit.svelte"
     import Logo from "./components/logo.svelte";
     import MetaData from "cms/components/shared/MetaData.svelte";
-    let email:string = ""
-    let password:string = ""
+    let email:string = "root@sveltecms.dev"
+    let password:string = "test"
     let checkForError:boolean = false
     let loading:boolean = false
     $: emailError = checkForError && email.trim()===""
@@ -42,7 +42,6 @@
 
     /** Validate email */
     function isValidEmail(email:string) {
-        console.log(email)
         const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
         return regex.test(email);
     }
