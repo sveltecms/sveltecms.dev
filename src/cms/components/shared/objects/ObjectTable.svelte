@@ -68,5 +68,12 @@
         .rowName,.rowValue{
             font-size: 17px;
         }
+        .rowValue{
+            /* Fix overflow on mobile */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
     }
 </style>

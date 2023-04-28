@@ -26,4 +26,10 @@
             color: #383e41;
         }
     }
+    // Mobile
+    @media(max-width:700px){
+        .warning{
+            font-size: 13px;
+        }
+    }
 </style>

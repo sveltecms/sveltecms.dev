@@ -1,18 +1,18 @@
 <script>
     import Logo from "./Logo.svelte";
+    // import Search from "./Search.svelte";
     import Links from "./Links.svelte";
     import SocialMedias from "./SocialMedias.svelte";
-    import Search from "./Search.svelte";
-    import ToggleSwitch from "./ToggleSwitch.svelte";
+    // import ToggleSwitch from "./ToggleSwitch.svelte";
 </script>
 
 <header>
     <nav>
         <Logo />
-        <Search />
+        <!-- <Search /> -->
         <Links />
         <SocialMedias />
-        <ToggleSwitch checked/>
+        <!-- <ToggleSwitch checked/> -->
     </nav>
 </header>
 
@@ -37,5 +37,6 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 20px;
     }
 </style>

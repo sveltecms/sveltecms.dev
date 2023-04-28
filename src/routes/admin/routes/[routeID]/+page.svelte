@@ -38,7 +38,7 @@
     }
 </script>
 
-<PageTitle title={`${data.routeData.ID} objects`} goBackHref="/routes" link={{ href:`/routes/${routeID}/new-object`,text:"Add object" }}/>
+<PageTitle title={data.routeData.ID} goBackHref="/routes" link={{ href:`/routes/${routeID}/new-object`,text:"Add object" }}/>
 <Objects bind:deleting {objects} on:delete={deleteObject}/>
 {#if objects.length===0}
     <NoResult title="No objects founded" subTitle="Please create new object to be displayed here" hrefText="Create object" href={`/routes/${routeID}/new-object`}/>
