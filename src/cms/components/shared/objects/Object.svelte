@@ -18,7 +18,7 @@
     <ObjectTable {object}/>
 </div>
 
-<style>
+<style lang="scss">
     .object{
         width: 100%;
         display: flex;
@@ -53,5 +53,15 @@
         margin-right: 10px;
         color: var(--textColor);
         flex: 1;
+    }
+    // Mobile
+    @media(max-width:700px){
+        .name{
+            /* Fix overflow on mobile */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
     }
 </style>

@@ -23,7 +23,6 @@
         text-transform: uppercase;
         font-size: 15px;
         font-weight: 500;
-        margin-left: 20px;
         color: var(--navColor);
         display: flex;
         align-items: center;

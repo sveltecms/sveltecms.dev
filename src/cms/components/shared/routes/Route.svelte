@@ -48,7 +48,7 @@
     </div>
 </div> 
 
-<style>
+<style lang="scss">
     .route{
         width: 100%;
         font-size: 15px;
@@ -61,6 +61,7 @@
         justify-content: space-between;
         margin-bottom: 15px;
         box-shadow: var(--boxShadow2);
+        gap: 15px;
     }
     .btn{
         display: flex;
@@ -72,13 +73,9 @@
         background-color: var(--buttonBg);
         padding: 5px 10px;
         border-radius: 20px;
-        margin: 0px 0 0px 20px;
         box-shadow: var(--boxShadow2);
         border: 1px solid transparent;
         transition: border 0.2s ease-in-out;
-    }
-    .btn.add{
-        margin: 0 10px 0 0;
     }
     .name{
         flex: 1;
@@ -93,6 +90,7 @@
     .actions{
         display: flex;
         align-items: center;
+        gap: 10px;
     }
     .icon{
         flex: 0;
@@ -106,12 +104,14 @@
         background-color: var(--mainColor);
         fill: #fff;
         box-shadow: var(--boxShadow2);
-        margin-left: 15px;
     }
     .icon.trash{
         background-color: #906565;
     }
-    .icon.objects{
-        margin: 0 10px 0 0;
+    // Mobile
+    @media(max-width:700px){
+        .route{ gap: 5px; }
+        .actions{ gap: 5px; }
+        .name{ font-size: 20px; }
     }
 </style>

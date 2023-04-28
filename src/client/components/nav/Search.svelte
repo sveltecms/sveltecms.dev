@@ -11,7 +11,6 @@
 
 <style lang="scss">
     .search{
-        margin: 0 0 0 30px;
         display: flex;
         align-items: center;
         background-color: rgba(0,0,0,.2);

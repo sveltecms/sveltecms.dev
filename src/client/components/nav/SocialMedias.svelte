@@ -15,10 +15,9 @@
 <style lang="scss">
     .socialMedias{
         border-radius: 2px;
-        border-left: 1.5px solid #65676ba7;
-        border-right: 1.5px solid #65676ba7;
-        margin: 0px 20px;
-        padding: 0px 20px;
+        border-left: 1.5px solid rgba(101, 103, 107, 0.6549019608);
+        /* border-right: 1.5px solid rgba(101, 103, 107, 0.6549019608); */
+        padding: 0px 0px 0px 20px;
         display: flex;
         align-items: center;
         gap: 20px;
