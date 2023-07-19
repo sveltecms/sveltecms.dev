@@ -15,6 +15,8 @@ import deleteObject from "cms/funcs/deleteObject"
 import updateObject from "cms/funcs/updateObject"
 import getRoutes from "cms/funcs/getRoutes"
 import searchObjects from "cms/funcs/searchObjects"
+import uploadUrlFile from "cms/funcs/uploadUrlFile"
+import updatePassword from "cms/funcs/updatePassword"
 import { json } from "@sveltejs/kit"
 import type { ApiFunc } from "cms/funcs"
 import type { RequestEvent } from "./$types"
@@ -39,6 +41,8 @@ export const POST = async(event:RequestEvent)=> {
         case "updateObject": return updateObject(db,event,apiFuncData,json)
         case "getRoutes": return getRoutes(db,event,apiFuncData,json)
         case "searchObjects": return searchObjects(db,event,apiFuncData,json)
+        case "uploadUrlFile": return uploadUrlFile(db,event,apiFuncData,json)
+        case "updatePassword": return updatePassword(db,event,apiFuncData,json)
         default: return json({ ok:false,msg:"Method not founded"})
     }
 }

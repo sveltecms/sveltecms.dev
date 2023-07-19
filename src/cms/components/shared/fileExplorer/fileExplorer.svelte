@@ -1,24 +1,17 @@
 <script lang="ts">
     export let open:boolean
     import type { AssetData } from "cms/types";
-    import type { SearchAssetsFunc,UploadFileFunc } from "cms/funcs"
+    import type { SearchAssetsFunc } from "cms/funcs"
+    import { createEventDispatcher } from "svelte";
     import Utils from "cms/utils";
     import PopUpBox from 'cms/components/shared/PopUpBox.svelte';
-    import Button from 'cms/components/shared/Button.svelte';
     import Search from "./Search.svelte"
     import Assets from "./assets/assets.svelte";
     import NoResult from "./NoResult.svelte";
-    // packages
-    import { addToast } from "cms/packages/toasts"
-    // icon
-    import UploadIcon from "cms/icons/Upload.svelte"
-    // svelte
-    import { createEventDispatcher } from "svelte";
+    import Upload from "./Upload.svelte";
     const dispatch = createEventDispatcher()
     let assets:AssetData[] = []
     let searchValue:string = ""
-    let fileInput:HTMLInputElement
-    let loading:boolean = false
 
     /** Search assets */
     async function searchAssets() {
@@ -28,46 +21,31 @@
         else{ assets = [] }
     }
 
-    /** Upload asset */
-    async function uploadAsset(){
-        // set loading stage
-        loading = true
-        // upload file
-        const files = fileInput.files as FileList
-        const formData = new FormData()
-        formData.append("image",files[0])
-        const apiResponse:UploadFileFunc['output'] = await Utils.fetch("/",formData,false)
-        // if file was uploaded
-        // show msg with response message
-        if(apiResponse.ok){
-            addToast({ msg:apiResponse.msg,type:"ok" })
-            assets = [apiResponse.data,...assets]
-            // send event
-            const asset:AssetData = apiResponse.data
-            dispatch("assetUploaded",asset)
-        }
-        else addToast({ msg:apiResponse.msg,type:"error" })
-        // remove loading stage
-        loading = false
-    }
-
     /** Send custom event */
     async function selectAsset(e:any){
         const asset:AssetData = e.detail
         dispatch("selectAsset",asset)
+        resetAll()
         // close file explorer
         open = false
+    }
+
+    /** Reset all data */
+    function resetAll(){
+        assets = []
+        searchValue = ""
     }
 </script>
 
 <PopUpBox bind:open>
     <Search bind:value={searchValue} on:change={searchAssets}/>
-    {#if assets.length>0}
-        <Assets {assets} on:assetClick={selectAsset}/>
-    {/if}
     {#if searchValue.trim().length>0 && assets.length===0}
         <NoResult {searchValue}/>
+        <Upload on:assetUploaded on:assetUploaded={e=>{assets=[...assets,e.detail]}} />
+    {:else if assets.length>0}
+        <Assets {assets} on:assetClick={selectAsset}/>
     {/if}
-    <input style="display:none" type="file" max="1" accept="image/*" bind:this={fileInput} on:change={uploadAsset}>
-    <Button bind:loading margin={assets.length>0 ? "15px 0 0 0" : "0"} circle text="Upload" icon={UploadIcon} on:click={()=>fileInput.click()}/>
+    {#if searchValue.trim().length===0}
+        <Upload on:assetUploaded on:assetUploaded={e=>{assets=[...assets,e.detail]}}/>
+    {/if}
 </PopUpBox>

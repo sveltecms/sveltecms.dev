@@ -13,8 +13,8 @@
     import Submit from "./components/submit.svelte"
     import Logo from "./components/logo.svelte";
     import MetaData from "cms/components/shared/MetaData.svelte";
-    let email:string = "root@sveltecms.dev"
-    let password:string = "test"
+    let email:string = ""
+    let password:string = ""
     let checkForError:boolean = false
     let loading:boolean = false
     $: emailError = checkForError && email.trim()===""

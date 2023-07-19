@@ -15,6 +15,7 @@
     import Label from "cms/components/shared/Label.svelte"
     import Button from "cms/components/shared/Button.svelte"
     import FileExplorer from "cms/components/shared/fileExplorer/fileExplorer.svelte";
+    import ChangePassword from "./ChangePassword.svelte";
     // elements
     import ToggleSwitch from "cms/components/elements/ToggleSwitch.svelte"
     import Input from "cms/components/elements/Input.svelte"
@@ -23,11 +24,13 @@
     // icons
     import CloudIcon from "cms/icons/Cloud.svelte"
     import AssetViewer from "cms/components/shared/ViewAsset.svelte";
+    import LockIcon from "cms/icons/Lock.svelte";
 
     $: appData = data.appData
     $: userData = data.userData
     $: appSocialMedias = appData.site.socialMedias as any
     let loading:boolean = false
+    let changingPass:boolean = false
     let fileExplorerOpen:boolean = false
 
     /** Save changes */
@@ -60,6 +63,7 @@
 <MetaData title="Settings"/>
 <PageTitle title="Settings" link={{ href:"/logout",text:"Logout" }}/>
 <FileExplorer bind:open={fileExplorerOpen} on:selectAsset={updateImage}/>
+<ChangePassword bind:open={changingPass} />
 <Content>
     <LeftContent>
         <Label text="App name" />
@@ -84,6 +88,8 @@
             <Label text={mediaName} />
             <Input placeholder="{mediaName}..." bind:value={appSocialMedias[mediaName]}/>
         {/each}
+        <Label text="Change password" />
+        <Button text="Change" icon={LockIcon} on:click={()=>changingPass=true} bind:loading={changingPass}/>
         <Label text="Allow users">
             <ToggleSwitch bind:checked={appData.config.allowNewUser} />
         </Label>
