@@ -4,7 +4,7 @@ import type { ApiFuncData,App,AssetData,ElementData,RouteData,RouteLoad,RouteObj
 /** Api function for route: /<cms-path>/settings/+server.ts */
 export type ApiFunc = UpdateSettingFunc | UploadFileFunc | UpdateUserFunc | UpdateAssetFunc | DeleteAssetFunc 
 | SearchAssetsFunc | CreateUserFunc | DeleteUserFunc | CreateRouteFunc | UpdateRouteFunc | DeleteRouteFunc
-| CreateObjectFunc | DeleteObjectFunc | UpdateObjectFunc | GetRoutesFunc | SearchObjectsFunc
+| CreateObjectFunc | DeleteObjectFunc | UpdateObjectFunc | GetRoutesFunc | SearchObjectsFunc | UploadUrlFileFunc | UpdatePasswordFunc
 
 /** Update app/user settings : /<cms-path>/settings */
 export type UpdateSettingFunc = ApiFuncData<"updateSettings",App,App>
@@ -12,10 +12,10 @@ export type UpdateSettingFunc = ApiFuncData<"updateSettings",App,App>
 /** Upload file : /<any> */
 export type UploadFileFunc = ApiFuncData<"uploadFile",FormData,AssetData>
 
-/** Upload file : /<any> */
+/** Update file : /<any> */
 export type UpdateUserFunc = ApiFuncData<"updateUser",{[key:string]:any},UserData>
 
-/** Upload asset */
+/** Delete asset */
 export type UpdateAssetFunc = ApiFuncData<"updateAsset",AssetData,AssetData>
 
 /** Upload asset */
@@ -53,3 +53,9 @@ export type GetRoutesFunc = ApiFuncData<"getRoutes",{count:number},RouteData[]>
 
 /** Search route objects */
 export type SearchObjectsFunc = ApiFuncData<"searchObjects",{filter:{key:string,value:string},count:number,routeID:string},RouteObjectData[]>
+
+/** Upload url file */
+export type UploadUrlFileFunc = ApiFuncData<"uploadUrlFile",{ url:string },AssetData>
+
+/** Update password */
+export type UpdatePasswordFunc = ApiFuncData<"updatePassword",{ currentPassword:string,newPassword:string },null>
